@@ -82,22 +82,7 @@ var app = function(){
 		device : {'os':'','type':''},
 		module : '',
 
-		pagebeforechange: function(event, eventData){
-			//console.log('pagebeforechange',event, eventData)
-
-
-			
-			
-		},
-		pagebeforecreate : function(event, eventData){
-			//console.log('pagebeforecreate',event, eventData)
-			
-		},
-		pagecreate : function(event, eventData){
-			//console.log('pagecreate',event, eventData)
-		},
-		pageinit : function(event, eventData){
-			//console.log('pageinit',event, eventData)
+		pageinit : function(){
 			// Fix some jQuery Mobile problems
 			styleFix();
 		},
@@ -125,16 +110,20 @@ var app = function(){
 				}
 			);
 			
-		}
+		},
+
+		loadStyleSheet : loadStyleSheet
 	};
 		
 }();
 
-$(document.body).live('pagebeforecreate', app.pagebeforecreate);
-$(document.body).live('pagecreate', app.pagecreate);
 $(document.body).live('pageinit', app.pageinit);
-$(document.body).live('pagebeforechange', app.pagebeforechange);
 $(document.body).live('pagechange', app.pagechange);
+$( document ).bind( "mobileinit", function() {
+	// Make your jQuery Mobile framework configuration changes here!
+	$.mobile.allowCrossDomainPages = true;
+	$.support.cors = true;
+});
 
 
 

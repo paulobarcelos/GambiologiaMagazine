@@ -1,12 +1,15 @@
 define(
-	["../plugins/module_loader/module_loader.js"],
-	function(module_loader) {
+	["../plugins/moduleLoader/index.js",
+    "../plugins/fragmentInjector/index.js"],
+	function(moduleLoader, fragmentInjector) {
         return {
         	init : function(){
-        		module_loader.init();
+        		moduleLoader.init();
+                fragmentInjector.init();
         	},
             plugins : { 
-            	module_loader : module_loader
+            	moduleLoader : moduleLoader,
+                fragmentInjector : fragmentInjector
             }
         }
     }
