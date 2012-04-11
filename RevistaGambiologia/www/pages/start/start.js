@@ -1,14 +1,17 @@
-define( ['templating', 'jqmhacks'], function( templating, jqmhacks ){
+define( ['templating', 'pagenav', 'jqmhacks'], function( templating, pagenav, jqmhacks ){
 
 	
 	function init( eventData ){
 
-		// Load prapare any template that might embeded in the code
-		templating.prepare($("div[data-role='template']"), function( eachResult ){
-			// Enhance the raw markup, unfortunatelly we need to run a hack to make sure header and footer will be enhaced			
+		pagenav.enhance( $("*:jqmData(role='pagenav')") );
+
+		templating.enhance( $("*:jqmData(role='template')"), function( eachResult ){	
+			
 			if( !jqmhacks.enhanceFix(eachResult) ){
 				eachResult.trigger( "create" );
 			}
+
+			pagenav.enhance( eachResult.find( "*:jqmData(role='pagenav')" ) );
 		});
 
 	}

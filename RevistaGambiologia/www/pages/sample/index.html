@@ -1,13 +1,10 @@
 <div data-role="page" data-page="sample">
-		
-	<div data-role="header" data-position="fixed" data-fullscreen="true">
-		<h1>Sample</h1>
+
+	<div data-role="template" data-template="basic-header" data-data-dir="{{page}}"></div>
+
+	<div data-role="content">		
 	</div>
-	
-	<div data-role="content">
-		<input type="search" />		
-	</div>
-	
-	<div data-role="fragment-injector" data-fragment="startFooter" />
-	
+
+	<div data-role="template" data-template="basic-footer"></div>
+
 </div>

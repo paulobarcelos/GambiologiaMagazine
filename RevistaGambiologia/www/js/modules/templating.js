@@ -29,7 +29,7 @@ define(function(){
 		});
 	}
 
-	function prepare ( jQueryCollection, eachSuccess, scope ) {
+	function enhance ( jQueryCollection, eachSuccess, scope ) {
 		$.each(
 			jQueryCollection,
 			function(){
@@ -68,6 +68,6 @@ define(function(){
 	return {
 		loadTemplate : loadTemplate,
 		loadTemplateData : loadTemplateData,
-		prepare : prepare
+		enhance : enhance
 	}
 });
