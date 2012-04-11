@@ -2,34 +2,6 @@ var app = function(){
 	var privateProperties = {
 		
 	};
-
-	var getDevice = function(){
-		//Sniff the OS, (naughty but necessary for some functionality)
-		if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
-			app.device.os = 'iOS';
-			app.device.type = 'phone';
-		}
-		
-		if((navigator.userAgent.match(/iPad/i))) {
-			app.device.os = 'iOS';
-			app.device.type = 'tablet';
-		}
-	
-		if((navigator.userAgent.match(/Android/i))) {
-			app.device.os = 'Android';
-			if((navigator.userAgent.match(/Mobile/i))) {
-				app.device.type = 'phone';
-			}
-			else{
-				app.device.type = 'tablet';
-			}
-		}
-		
-		if((navigator.userAgent.match(/Windows Phone OS/i))) {
-			app.device.os = 'Windows Mobile';
-			app.device.type = 'phone'; //Assume is phone as I cant see any Windows Mobile phones on market
-		}	
-	};
 	
 	var styleFix = function(){
 		//There is some functionality in jQuery Mobile which is not App like, we fix this in both the CSS and JS
@@ -48,7 +20,7 @@ var app = function(){
 		   link.setAttribute( 'id', id);
 	
 	   var sheet, cssRules;
-	// get the correct properties to check for depending on the browser
+		// get the correct properties to check for depending on the browser
 	   if ( 'sheet' in link ) {
 	      sheet = 'sheet'; cssRules = 'cssRules';
 	   }
@@ -79,8 +51,7 @@ var app = function(){
 	
 	return {
 		path : '',
-		device : {'os':'','type':''},
-		module : '',
+		page : '',
 
 		pageinit : function(){
 			// Fix some jQuery Mobile problems
@@ -88,25 +59,19 @@ var app = function(){
 		},
 		
 		pagechange: function(event, eventData){
-			//console.log('pagechange',event, eventData)
 			
 			//Initialise the application page
-			app.module = $(eventData.toPage).attr('data-module');
+			app.page = $(eventData.toPage).attr('data-page');
 
 			if(app.path === ''){
 				app.path = window.location.href.replace(/modules\/.*?$/, '').replace('index.html','');
-			}
+			}			
 			
-			// Update device information
-			getDevice();	
-			
-			//Each module should have a javascript file, we pull this in here
+			//Each page should have a javascript file, we pull this in here
 			require(
-				[app.path + 'plugins/plugins.js',
-				app.path + 'modules/' + app.module + '/index.js'],
-				function(plugins, module){
-					plugins.init();
-					module.init(eventData);
+				[app.path + 'pages/' + app.page + '/index.js'],
+				function(page){
+					page.init(eventData);
 				}
 			);
 			
@@ -119,11 +84,3 @@ var app = function(){
 
 $(document.body).live('pageinit', app.pageinit);
 $(document.body).live('pagechange', app.pagechange);
-$( document ).bind( "mobileinit", function() {
-	// Make your jQuery Mobile framework configuration changes here!
-	$.mobile.allowCrossDomainPages = true;
-	$.support.cors = true;
-});
-
-
-
