@@ -50,7 +50,7 @@ var app = function(){
 	}
 	
 	return {
-		path : '',
+		path : window.location.href.replace(/pages\/.*?$/, '').replace('index.html',''),
 		page : '',
 
 		pageinit : function(){
@@ -63,9 +63,9 @@ var app = function(){
 			//Initialise the application page
 			app.page = $(eventData.toPage).attr('data-page');
 
-			if(app.path === ''){
-				app.path = window.location.href.replace(/modules\/.*?$/, '').replace('index.html','');
-			}			
+			/*if(app.path === ''){
+				app.path = window.location.href.replace(/pages\/.*?$/, '').replace('index.html','');
+			}*/		
 			
 			//Each page should have a javascript file, we pull this in here
 			require(
@@ -81,6 +81,12 @@ var app = function(){
 	};
 		
 }();
+
+require.config({
+	paths : {
+		utils : app.path + 'js/modules/utilsjs' 
+	}
+});
 
 $(document.body).live('pageinit', app.pageinit);
 $(document.body).live('pagechange', app.pagechange);
