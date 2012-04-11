@@ -11,6 +11,7 @@ require.config({
 		'util' : app.path + 'js/modules/util',
 		'dom' : app.path + 'js/modules/dom',
 		'templating' : app.path + 'js/modules/templating',
+		'jqmhacks' : app.path + 'js/modules/jqmhacks',
 
 		'text' : app.path + 'js/requirejs-plugins/text',
 		'i18n' : app.path + 'js/requirejs-plugins/i18n'

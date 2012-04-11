@@ -10,9 +10,14 @@ define(function(){
 		});
 	}
 
-	function loadTemplateData ( name, success, scope ) {
+	function loadTemplateData ( name, dataDir, success, scope ) {
 
-		require( ['i18n!' + app.path + 'templates-data/nls/' + name + '.js' ], function( data ){
+		var dataDir = dataDir || 'templates-data';
+		if( dataDir === '{{page}}' ){
+			dataDir = 'pages/' + app.page;
+		}
+
+		require( ['i18n!' + app.path + dataDir + '/nls/' + name + '.js' ], function( data ){
 			if( success ){
 				success.call( scope || window, data );
 			}
@@ -30,18 +35,22 @@ define(function(){
 
 						var data = target.data('data');
 						if (data){
-							target.replaceWith( $(template(data)) );
+							var result = $(template(data));
+							target.html( result );
+							target.remove();
 
 							if( eachSuccess ){
-								eachSuccess.call( scope || window, null );
+								eachSuccess.call( scope || window, result );
 							}
 						}
 						else{
-							loadTemplateData( target.data('template'), function( data ){
-								target.replaceWith( $(template(data)) );
+							loadTemplateData( target.data('template'), target.data('dataDir'), function( data ){
+								var result = $(template(data));
+								target.after( result );
+								target.remove();
 
 								if( eachSuccess ){
-									eachSuccess.call( scope || window, null );
+									eachSuccess.call( scope || window, result );
 								}
 							});
 						}
