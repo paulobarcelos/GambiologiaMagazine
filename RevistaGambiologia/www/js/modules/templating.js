@@ -1,7 +1,12 @@
 define(function(){
 
-	function loadTemplate ( name, success, scope ) {
-		require( ['text!' + app.path + 'templates/' + name + '.html' ], function( source ){
+	function loadTemplate ( name, dir, success, scope ) {
+		var dir = dir || 'templates';
+		if( dir === '{{page}}' ){
+			dir = 'pages/' + app.page;
+		}
+
+		require( ['text!' + app.path + dir +'/' + name + '.html' ], function( source ){
 			var template =  Handlebars.compile( source );
 
 			if( success ){
@@ -10,14 +15,14 @@ define(function(){
 		});
 	}
 
-	function loadTemplateData ( name, dataDir, success, scope ) {
+	function loadTemplateData ( name, dir, success, scope ) {
 
-		var dataDir = dataDir || 'templates-data';
-		if( dataDir === '{{page}}' ){
-			dataDir = 'pages/' + app.page;
+		var dir = dir || 'templates-data';
+		if( dir === '{{page}}' ){
+			dir = 'pages/' + app.page;
 		}
 
-		require( ['i18n!' + app.path + dataDir + '/nls/' + name + '.js' ], function( data ){
+		require( ['i18n!' + app.path + dir + '/nls/' + name + '.js' ], function( data ){
 			if( success ){
 				success.call( scope || window, data );
 			}
@@ -31,7 +36,7 @@ define(function(){
 				if( $(this).data('role') === 'template' ){
 					var target = $(this);
 
-					loadTemplate( target.data('template'),  function( template ){
+					loadTemplate( target.data('template'), target.data('templateDir'), function( template ){
 
 						var data = target.data('data');
 						if (data){
