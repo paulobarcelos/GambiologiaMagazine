@@ -6,11 +6,10 @@ define(function(){
 	**/
 	function enhanceFix ( element ) {
 		var role = element.data('role');
-
 		if( role !== 'header' && role !== 'footer'){
 			return false;
 		}
-			
+
 		element.trigger('pagecreate');
 
 		if( element.data('position') === 'fixed' ) {

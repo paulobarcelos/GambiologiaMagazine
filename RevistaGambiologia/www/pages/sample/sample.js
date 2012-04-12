@@ -1,19 +1,9 @@
-define( ['templating', 'pagenav', 'jqmhacks'], function( templating, pagenav, jqmhacks ){
+define( ['pageinit'], function( pageinit ){
+	function init( page, resolve ){
 
-	
-	function init( eventData ){
-
-		pagenav.enhance( $("*:jqmData(role='pagenav')") );
-
-		templating.enhance( $("*:jqmData(role='template')"), function( eachResult ){	
-			
-			if( !jqmhacks.enhanceFix(eachResult) ){
-				eachResult.trigger( "create" );
-			}
-
-			pagenav.enhance( eachResult.find( "*:jqmData(role='pagenav')" ) );
+		pageinit.init(page,function(){
+			resolve.call();
 		});
-
 	}
 
 	return {

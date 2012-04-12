@@ -1,8 +1,8 @@
-define(function(){
+define(['util'], function( util ){
 
 	function loadTemplate ( name, dir, success, scope ) {
 		var dir = dir || 'templates';
-		if( dir === '{{page}}' ){
+		if( dir === '__page__' ){
 			dir = 'pages/' + app.page;
 		}
 
@@ -18,7 +18,7 @@ define(function(){
 	function loadTemplateData ( name, dir, success, scope ) {
 
 		var dir = dir || 'templates-data';
-		if( dir === '{{page}}' ){
+		if( dir === '__page__' ){
 			dir = 'pages/' + app.page;
 		}
 
@@ -29,8 +29,9 @@ define(function(){
 		});
 	}
 
-	function enhance ( jQueryCollection, eachSuccess, scope ) {
-		$.each(
+	function enhance ( jQueryCollection, eachSuccess, success, scope ) {
+		var triggerSuccess = util.trigger(jQueryCollection.length, success, [], scope || window);
+		$.each(	
 			jQueryCollection,
 			function(){
 				if( $(this).data('role') === 'template' ){
@@ -47,6 +48,7 @@ define(function(){
 							if( eachSuccess ){
 								eachSuccess.call( scope || window, result );
 							}
+							triggerSuccess();
 						}
 						else{
 							loadTemplateData( target.data('template'), target.data('dataDir'), function( data ){
@@ -57,9 +59,13 @@ define(function(){
 								if( eachSuccess ){
 									eachSuccess.call( scope || window, result );
 								}
+								triggerSuccess();
 							});
 						}
 					});					
+				}
+				else{
+					triggerSuccess();
 				}					
 			}
 		);

@@ -96,6 +96,28 @@ define(function(){
 	}
 
 	/** 
+	 * Returns a function that will only be executed after being called an
+	 * specific number of times. Useful for lazy initialization when only the
+	 * last call should apply.
+	 * @param Number count - exact number of times the fucntion will need to be called before executed
+	 * @param {function(...):*} func
+	 * @param Array args - function arguments
+	 * @param Number delay - delay to call the function, in milliseconds
+	 * @param Object context - "this" value
+	 * @return {function(...):*}
+	 */
+	function trigger(count, func, args, context) {
+		if( typeof func === 'function' ){
+			if (args.constructor.toString().indexOf("Array") == -1) args = [];
+			var index = 0;
+			return function() {
+				index++;
+				if (index == count) func.apply(context || window, args);
+			};
+		}
+	}
+
+	/** 
 	 * Calls a function asynchronously, with optional delay and scope.
 	 * @param {function(...):*} func
 	 * @param Array args - function arguments
@@ -107,7 +129,7 @@ define(function(){
 		if( typeof func === 'function' ){
 			if (args.constructor.toString().indexOf("Array") == -1) args = [];
 			delay = delay || 0;
-			context = context || this;
+			context = context || window;
 			var execute = function(){
 				func.apply(context, args);
 			}
@@ -146,6 +168,7 @@ define(function(){
 		throttle: throttle,
 		debounce: debounce,
 		once: once,
+		trigger: trigger,
 		async: async,
 		construct : construct
 	}
