@@ -5,6 +5,8 @@
 .DS_Store
 *.app
 *.build
+*.xcuserstate
+*.xcworkspace
 
 # Windows
 *.ini
