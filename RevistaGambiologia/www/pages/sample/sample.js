@@ -1,7 +1,6 @@
-define( ['pageinit'], function( pageinit ){
+define( ['pagecommon'], function( pagecommon ){
 	function init( page, resolve ){
-
-		pageinit.init(page,function(){
+		pagecommon.init(page,function(){
 			resolve.call();
 		});
 	}

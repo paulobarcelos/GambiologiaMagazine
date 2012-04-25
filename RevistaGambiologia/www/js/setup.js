@@ -14,7 +14,7 @@ require.config({
 		'templating' : app.path + 'js/modules/templating',
 		'jqmhacks' : app.path + 'js/modules/jqmhacks',
 		'pagenav' : app.path + 'js/modules/pagenav',
-		'pageinit' : app.path + 'js/modules/pageinit',
+		'pagecommon' : app.path + 'js/modules/pagecommon',
 
 		'text' : app.path + 'js/requirejs-plugins/text',
 		'i18n' : app.path + 'js/requirejs-plugins/i18n'
