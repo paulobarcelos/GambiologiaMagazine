@@ -11,7 +11,7 @@ define( ['pagecommon', 'util'], function( pagecommon, util ){
 	* soon as the page is ready to be displayed
 	**/
 	function init( _page, _resolve ){
-		// Sotre out top level vars
+		// Sotre as top level vars
 		page = _page;
 		resolve = _resolve;
 
@@ -20,8 +20,7 @@ define( ['pagecommon', 'util'], function( pagecommon, util ){
 	}
 
 	/**
-	* Will be called after all the commom modules have worked on
-	* the page.
+	* Will be called after all the commom modules have worked on the page.
 	**/
 	function afterCommon(){
 		// -------------------- Step 1
@@ -45,41 +44,65 @@ define( ['pagecommon', 'util'], function( pagecommon, util ){
 			// Now that we have the data, we will create a directory for
 			// each issue. We first try to check if the first directory
 			// exists; if so we know earlier that they were already created
+			
+
 			app.permanentFileSystem.root.getDirectory(
 				issuesData.issues[0].id,
 				{},
-				function(dir){
-					listIssues();
+				function(){
+					checkForDownloadedIssues( listIssues );
 				},
 				function(){
 					console.log('Error loading first directory');
-					createIssuesDirectories();
+
+					createIssuesDirectories( function(){
+						checkForDownloadedIssues( listIssues );
+					} );
 				}
 
 			);
 
 			// Will create a directory for each issue and when done, move to the
 			// next step.
-			var createIssuesDirectories = function(){
-				// create a "lazy" listIssues function using our "trigger" util.
-				// the function will only be executed after it has been called
-				// for the exact number of time specified in the firt argument.
-				var lazyListIssues = util.trigger(issuesData.issues.length, listIssues, {});
+			var createIssuesDirectories = function( after ){
+				var lazyAfter = util.trigger(issuesData.issues.length, after);
 
-				for( var i = 0; i <  issuesData.issues.length; i++){					
+				for( issueID in issuesData.issues){					
 					// Retrieve an existing directory, or create it if it does not already exist
 					app.permanentFileSystem.root.getDirectory(
-						issuesData.issues[i].id, 
+						issueID, 
 						{create: true, exclusive: true}, 
-						function(dir){
-							lazyListIssues();
+						function(dir){													
+							lazyAfter();
 						},
 						function(error){
 							console.log('Error at createIssuesDirectories', error);
 						}
 					);
 				}
-			}			
+			}
+
+			// Check which issue was already downloaded and store that information
+			// in the issuesData object.
+			var checkForDownloadedIssues = function( after ){
+				var lazyAfter = util.trigger(issuesData.issues.length, after);
+
+				for( issueID in issuesData.issues){
+					app.permanentFileSystem.root.getFile(
+						issueID + "/_downloaded",
+						{},
+						function(file){
+							console.log(issueID);
+							lazyAfter();
+						},
+						function(evt){
+							lazyAfter();
+						}
+
+					);
+
+				};
+			}
 		}
 
 		// --------- 1 - B
@@ -120,12 +143,18 @@ define( ['pagecommon', 'util'], function( pagecommon, util ){
 		loadIssuesData();
 	}
 
+
+
 	/**
 	* Show all the issues, or display the a message 
 	* in case we couldn't access the issues data
 	**/
 	function listIssues(){
-		console.log(issuesData.issues)
+		// Do we have the issues data?
+		// If so, display the issues, 
+
+
+		//console.log(issuesData.issues)
 		resolve.call();
 	}
 

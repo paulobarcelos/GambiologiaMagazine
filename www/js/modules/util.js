@@ -108,7 +108,8 @@ define(function(){
 	 */
 	function trigger(count, func, args, context) {
 		if( typeof func === 'function' ){
-			if (args.constructor.toString().indexOf("Array") == -1) args = [];
+			if(!args) args = [];
+			else if (args.constructor.toString().indexOf("Array") == -1) args = [];
 			var index = 0;
 			return function() {
 				index++;

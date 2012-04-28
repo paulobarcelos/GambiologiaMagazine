@@ -1,24 +1,20 @@
 {
-	"issues":[
-		{
-			"id" : "gmb1",
+	"issues": {
+		"gmb1" : {
 			"name" : "Issue #1",
 			"resources" : "http://gambiologia.dev/issue1/"
 		},
-		{
-			"id" : "gmb2",
+		"gmb2" : {
 			"name" : "Issue #2",
 			"resources" : "http://gambiologia.dev/issue2/"
 		},
-		{
-			"id" : "gmb3",
+		"gmb3" : {
 			"name" : "Issue #3",
 			"resources" : "http://gambiologia.dev/issue3/"
 		},
-		{
-			"id" : "gmb4",
+		"gmb4" : {
 			"name" : "Issue #4",
 			"resources" : "http://gambiologia.dev/issue4/"
 		}
-	]
+	}
 }
