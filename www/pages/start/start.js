@@ -1,4 +1,4 @@
-define( ['pagecommon', 'util'], function( pagecommon, util ){
+define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templating ){
 	
 	// Top level vars, to stored as soons as they become available
 	var page,
@@ -41,68 +41,42 @@ define( ['pagecommon', 'util'], function( pagecommon, util ){
 		var onIssuesLoadSucess = function(data){
 			issuesData = data;
 
-			// Now that we have the data, we will create a directory for
-			// each issue. We first try to check if the first directory
-			// exists; if so we know earlier that they were already created
-			
+			// Create a "lazy" callback to the next step
+			var lazyListIssues = util.trigger(issuesData.length, listIssues);
 
-			app.permanentFileSystem.root.getDirectory(
-				issuesData.issues[0].id,
-				{},
-				function(){
-					checkForDownloadedIssues( listIssues );
-				},
-				function(){
-					console.log('Error loading first directory');
-
-					createIssuesDirectories( function(){
-						checkForDownloadedIssues( listIssues );
-					} );
-				}
-
-			);
-
-			// Will create a directory for each issue and when done, move to the
-			// next step.
-			var createIssuesDirectories = function( after ){
-				var lazyAfter = util.trigger(issuesData.issues.length, after);
-
-				for( issueID in issuesData.issues){					
-					// Retrieve an existing directory, or create it if it does not already exist
+			// Check if the issues directories exists, if so check if issue
+			// was already downloaded. If not, create the issue directory
+			for( issueID in issuesData.issues){				
+				var closure = function(id){
 					app.permanentFileSystem.root.getDirectory(
-						issueID, 
+						id, 
 						{create: true, exclusive: true}, 
-						function(dir){													
-							lazyAfter();
+						function(dir){
+							// directory don't exist, we can flag early
+							issuesData.issues[id].downloaded = false;
+							lazyListIssues();
 						},
 						function(error){
-							console.log('Error at createIssuesDirectories', error);
+							// Flags as downloaded
+							app.permanentFileSystem.root.getFile(
+								id + "/_downloaded",
+								{},
+								function(file){
+									// Issue was donwloaded
+									issuesData.issues[id].downloaded = true;
+									lazyListIssues();
+								},
+								function(evt){
+									// Issue was not downloaded
+									issuesData.issues[id].downloaded = false;
+									lazyListIssues();
+								}
+							);
 						}
 					);
 				}
-			}
-
-			// Check which issue was already downloaded and store that information
-			// in the issuesData object.
-			var checkForDownloadedIssues = function( after ){
-				var lazyAfter = util.trigger(issuesData.issues.length, after);
-
-				for( issueID in issuesData.issues){
-					app.permanentFileSystem.root.getFile(
-						issueID + "/_downloaded",
-						{},
-						function(file){
-							console.log(issueID);
-							lazyAfter();
-						},
-						function(evt){
-							lazyAfter();
-						}
-
-					);
-
-				};
-			}
+				closure(issueID);
+			}	
 		}
 
 		// --------- 1 - B
@@ -128,7 +102,7 @@ define( ['pagecommon', 'util'], function( pagecommon, util ){
 					// On error
 					function(error) {
 						$.mobile.hidePageLoadingMsg(); // hide the loader
-						navigator.notification.alert(app.messages.connectionError);
+						navigator.notification.alert(app.strings.connectionError);
 						console.log("download error source " + error.source);
 						console.log("download error target " + error.target);
 						console.log("upload error code" + error.code);
@@ -137,6 +111,11 @@ define( ['pagecommon', 'util'], function( pagecommon, util ){
 						listIssues();
 					}
 				);
+			}
+			else{
+				// No internet, show an alert and the move on to list issues
+				navigator.notification.alert(app.strings.noInternet);
+				listIssues();
 			}
 		}
 
@@ -150,12 +129,29 @@ define( ['pagecommon', 'util'], function( pagecommon, util ){
 	* in case we couldn't access the issues data
 	**/
 	function listIssues(){
-		// Do we have the issues data?
-		// If so, display the issues, 
+		
+		if(issuesData){
+			templating.loadTemplate('issues-list', null, function( template ){
+				var data = { issues : [], strings : app.strings };
+				for( issueID in issuesData.issues){	
+					var issue = issuesData.issues[issueID];
+					issue.id = issueID;
+					data.issues.push(issue);
+				}
 
-
-		//console.log(issuesData.issues)
-		resolve.call();
+				$('#issues').append( template( data ) );
+				resolve.call();
+			});
+		}
+		else{
+			templating.loadTemplate('issues-empty', null, function( template ){
+				var data = { strings : app.strings };
+				$('#issues').append( template( data ) );
+				resolve.call();
+			});
+		}
+		
+		
 	}
 
 	return {

@@ -1,0 +1,17 @@
+<article class="ui-grid-a">
+	{{#issues}}
+		<div class="ui-block-{{alternator}}">
+			<h3>{{title}}</h3>
+			<img src="{{cover}}"/>
+			{{#if available}}
+				{{#if downloaded}}
+					<a href="#">{{strings.readIssue}}</a>
+				{{else}}
+					<a href="#">{{strings.downloadIssue}}</a>
+				{{/if}}
+			{{else}}
+				<span>{{strings.issueNotAvailable}}</span>
+			{{/if}}
+		</div>
+	{{/issues}}   
+</article>

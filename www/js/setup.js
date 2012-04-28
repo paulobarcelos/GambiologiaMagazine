@@ -13,7 +13,7 @@ var app = {
 	// To following "constants" will be popuplates as soon as we can get a hold on them
 	permanentFileSystem: {},
 	permanentEntry: {},
-	messages : {}
+	strings : {}
 };
 
 // Setup some modules & plguins aliases
@@ -100,8 +100,8 @@ var onDeviceReady = function(){
 
    	// Load some static data to the app
     var loadStrings =  function(){
-    	require( ['i18n!' + app.path + 'static-strings/nls/messages.js' ], function( messages ){
-			app.messages = messages;
+    	require( ['i18n!' + app.path + 'static/nls/strings.js' ], function( strings ){
+			app.strings = strings;
 
 			 // Goto to step 3
         	onInitComplete();

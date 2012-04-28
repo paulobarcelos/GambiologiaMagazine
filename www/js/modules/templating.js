@@ -15,9 +15,9 @@ define(['util'], function( util ){
 		});
 	}
 
-	function loadTemplateData ( name, dir, success, scope ) {
+	function loadStaticData ( name, dir, success, scope ) {
 
-		var dir = dir || 'templates-data';
+		var dir = dir || 'static';
 		if( dir === '__page__' ){
 			dir = 'pages/' + app.page;
 		}
@@ -51,7 +51,7 @@ define(['util'], function( util ){
 							triggerSuccess();
 						}
 						else{
-							loadTemplateData( target.data('template'), target.data('dataDir'), function( data ){
+							loadStaticData( target.data('template'), target.data('dataDir'), function( data ){
 								var result = $(template(data));
 								target.after( result );
 								target.remove();
@@ -71,9 +71,10 @@ define(['util'], function( util ){
 		);
 	}
 
+
 	return {
 		loadTemplate : loadTemplate,
-		loadTemplateData : loadTemplateData,
+		loadStaticData : loadStaticData,
 		enhance : enhance
 	}
 });
