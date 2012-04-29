@@ -1,0 +1,26 @@
+{
+	"settings" : "gambiologia.1.0.json",
+	"resources" : [
+		"gambiologia.1.0.json",
+
+		"issues/gm1/cover.png",
+		"issues/gm1/nls/info.js",
+		"issues/gm1/nls/root/info.js",
+		"issues/gm1/nls/pt-br/info.js",
+
+		"issues/gm2/cover.png",
+		"issues/gm2/nls/info.js",
+		"issues/gm2/nls/root/info.js",
+		"issues/gm2/nls/pt-br/info.js",
+
+		"issues/gm3/cover.png",
+		"issues/gm3/nls/info.js",
+		"issues/gm3/nls/root/info.js",
+		"issues/gm3/nls/pt-br/info.js",
+
+		"issues/gm4/cover.png",
+		"issues/gm4/nls/info.js",
+		"issues/gm4/nls/root/info.js",
+		"issues/gm4/nls/pt-br/info.js"
+	]
+}

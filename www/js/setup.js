@@ -23,6 +23,7 @@ require.config({
 		'util' : app.path + 'js/modules/util',
 		'dom' : app.path + 'js/modules/dom',
 		'templating' : app.path + 'js/modules/templating',
+		'cachedownload' : app.path + 'js/modules/cachedownload',
 		'jqmhacks' : app.path + 'js/modules/jqmhacks',
 		'pagenav' : app.path + 'js/modules/pagenav',
 		'pagecommon' : app.path + 'js/modules/pagecommon',

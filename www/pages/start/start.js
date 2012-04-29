@@ -1,4 +1,4 @@
-define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templating ){
+define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecommon, util, cachedownload, templating ){
 	
 	// Top level vars, to stored as soons as they become available
 	var page,
@@ -16,110 +16,85 @@ define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templa
 		resolve = _resolve;
 
 		// Init the common modules
-		pagecommon.init( page, afterCommon );
+		pagecommon.init( page, getIssuesData );
 	}
 
 	/**
 	* Will be called after all the commom modules have worked on the page.
 	**/
-	function afterCommon(){
-		// -------------------- Step 1
-		/**
-		* Try to get a hold on the issues data
-		**/
-		var loadIssuesData = function(){
+	function getIssuesData( success, context ){
+		success = success || function(){};
+		context = context || window;
+		// Is there internet connection?
+		var networkState = navigator.network.connection.type;
+		if( networkState != Connection.NONE || networkState != Connection.UNKNOWN ){
+			// Load the config
+			$.mobile.showPageLoadingMsg();
 			$.ajax({
-				url : app.permanentFileSystem.root.fullPath +'/' + app.issuesStructureLocalPath,
+				url : app.server + 'config.json',
 				dataType: 'json',
-				success : onIssuesLoadSucess,
-				error : onIssuesLoadFail
-			});
-		}		
-
-		// --------- 1 - A
-		// If issues data can be loaded successfully from local storage
-		var onIssuesLoadSucess = function(data){
-			issuesData = data;
-
-			// Create a "lazy" callback to the next step
-			var lazyListIssues = util.trigger(issuesData.length, listIssues);
-
-			// Check if the issues directories exists, if so check if issue
-			// was already downloaded. If not, create the issue directory
-			for( issueID in issuesData.issues){				
-				var closure = function(id){
-					app.permanentFileSystem.root.getDirectory(
-						id, 
-						{create: true, exclusive: true}, 
-						function(dir){
-							// directory don't exist, we can flag early
-							issuesData.issues[id].downloaded = false;
-							lazyListIssues();
-						},
-						function(error){
-							// Flags as downloaded
-							app.permanentFileSystem.root.getFile(
-								id + "/_downloaded",
-								{},
-								function(file){
-									// Issue was donwloaded
-									issuesData.issues[id].downloaded = true;
-									lazyListIssues();
-								},
-								function(evt){
-									// Issue was not downloaded
-									issuesData.issues[id].downloaded = false;
-									lazyListIssues();
+				success : function(data){
+					cachedownload.get({
+						files : data.resources,		
+						success : function(files){
+							$.mobile.hidePageLoadingMsg();
+							for (var i = files.length - 1; i >= 0; i--) {
+								if(files[i].name === data.settings){
+									var reader = new FileReader();
+								    reader.onloadend = function( evt )
+										success.call( context, $.parseJSON( evt.target.result ) );
+								    };
+								    reader.readAsText( files[i] );
+									break;
 								}
-							);
+							};
+						},
+						fail: function(){
+							$.mobile.hidePageLoadingMsg();
+							success.call( context );
+						}
+					});
+
+					/*
+
+					// Check if we already have the current settings
+					app.permanentFileSystem.root.getFile( data.settings, {},
+						function( file ){
+							// We have this settings already! so let's read it it...
+							
+						},
+						function(evt){
+							// We don't have these settings, we need to donwload the resources!
+							$.mobile.showPageLoadingMsg();
+							cachedownload.get({
+								files : data.resources,		
+								success : function(files){
+									$.mobile.hidePageLoadingMsg();
+									console.log(files);
+								},
+								fail: function(){
+									$.mobile.hidePageLoadingMsg();
+									success.call( context );
+								}
+							});
 						}
 					);
+					*/
+				},
+				error : function(error){
+					$.mobile.hidePageLoadingMsg();
+					// We couldn't get the config file from the server.
+					// Move on but don't notify the user...
+					success.call( context )
 				}
-				closure(issueID);
-			}	
+			});
 		}
-
-		// --------- 1 - B
-		// If issues data was not found on local storage
-		var onIssuesLoadFail = function(){
-			// Is there internet connection?
-			var networkState = navigator.network.connection.type;
-			if( networkState != Connection.NONE || networkState != Connection.UNKNOWN ){
-				// Ok there is internet, let's load the file	
-				$.mobile.showPageLoadingMsg(); // show the loader			
-				var fileTransfer = new FileTransfer();
-				fileTransfer.download(
-					// URL
-					app.server + app.issuesStructureRemotePath,
-					// Download path
-					app.permanentFileSystem.root.fullPath + '/' + app.issuesStructureLocalPath,
-					// On success
-					function(entry) {
-						$.mobile.hidePageLoadingMsg(); // hide the loader
-						// Now that we have the file, let's load it
-						loadIssuesData();
-					},
-					// On error
-					function(error) {
-						$.mobile.hidePageLoadingMsg(); // hide the loader
-						navigator.notification.alert(app.strings.connectionError);
-						console.log("download error source " + error.source);
-						console.log("download error target " + error.target);
-						console.log("upload error code" + error.code);
-
-						// We don't have the file, but let's move to the next step anyway
-						listIssues();
-					}
-				);
-			}
-			else{
-				// No internet, show an alert and the move on to list issues
-				navigator.notification.alert(app.strings.noInternet);
-				listIssues();
-			}
+		else {
+			// No internet, show an alert and the move on to list issues
+			navigator.notification.alert(app.strings.noInternet);
+			success.call( context );
 		}
-
-		loadIssuesData();
+		
 	}
 
 
@@ -130,7 +105,7 @@ define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templa
 	**/
 	function listIssues(){
 		
-		if(issuesData){
+		/*if(issuesData){
 			templating.loadTemplate('issues-list', null, function( template ){
 				var data = { issues : [], strings : app.strings };
 				for( issueID in issuesData.issues){	
@@ -149,7 +124,7 @@ define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templa
 				$('#issues').append( template( data ) );
 				resolve.call();
 			});
-		}
+		}*/
 		
 		
 	}
