@@ -15,41 +15,86 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 		page = _page;
 		resolve = _resolve;
 
-		cachedownload.get({
-			files : ['gmb1.png','gmb2.png','gmb3.png','gmb4.png','covers/test.png'],
-			update : function(){
-				console.log("update");
-				console.log(cachedownload.getProgress());
-			},
-			success : function(files){
-				console.log("success");
-				console.log(files);
-			},
-			error: function(error){
-				console.log('error');
-				console.log(error)
-			}
-		});
-
 		// Init the common modules
-		pagecommon.init( page, afterCommon );
+		pagecommon.init( page, getIssuesData );
 	}
 
 	/**
 	* Will be called after all the commom modules have worked on the page.
 	**/
-	function afterCommon(){
-		
-		// Load the config
-		$.ajax({
-			url : app.server + 'config.json',
-			type : 'json',
-			success : function(data){
+	function getIssuesData( success, context ){
+		success = success || function(){};
+		context = context || window;
+		// Is there internet connection?
+		var networkState = navigator.network.connection.type;
+		if( networkState != Connection.NONE || networkState != Connection.UNKNOWN ){
+			// Load the config
+			$.mobile.showPageLoadingMsg();
+			$.ajax({
+				url : app.server + 'config.json',
+				dataType: 'json',
+				success : function(data){
+					cachedownload.get({
+						files : data.resources,		
+						success : function(files){
+							$.mobile.hidePageLoadingMsg();
+							for (var i = files.length - 1; i >= 0; i--) {
+								if(files[i].name === data.settings){
+									var reader = new FileReader();
+								    reader.onloadend = function( evt )
+										success.call( context, $.parseJSON( evt.target.result ) );
+								    };
+								    reader.readAsText( files[i] );
+									break;
+								}
+							};
+						},
+						fail: function(){
+							$.mobile.hidePageLoadingMsg();
+							success.call( context );
+						}
+					});
 
-			},
-			error : function(error){
-			}
-		});
+					/*
+
+					// Check if we already have the current settings
+					app.permanentFileSystem.root.getFile( data.settings, {},
+						function( file ){
+							// We have this settings already! so let's read it it...
+							
+						},
+						function(evt){
+							// We don't have these settings, we need to donwload the resources!
+							$.mobile.showPageLoadingMsg();
+							cachedownload.get({
+								files : data.resources,		
+								success : function(files){
+									$.mobile.hidePageLoadingMsg();
+									console.log(files);
+								},
+								fail: function(){
+									$.mobile.hidePageLoadingMsg();
+									success.call( context );
+								}
+							});
+						}
+					);
+					*/
+				},
+				error : function(error){
+					$.mobile.hidePageLoadingMsg();
+					// We couldn't get the config file from the server.
+					// Move on but don't notify the user...
+					success.call( context )
+				}
+			});
+		}
+		else {
+			// No internet, show an alert and the move on to list issues
+			navigator.notification.alert(app.strings.noInternet);
+			success.call( context );
+		}
+		
 	}
 
 

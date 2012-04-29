@@ -5,28 +5,43 @@ define(['util'], function( util ){
 	function get ( args ) {
 		progress = 0;
 		var count = 0;
+		var errorCount = 0;
+		var cachedFiles = [];
 
 		args = args || {};
 		args.files = args.files || [];
 		args.update = args.update || function(){};
-		args.success = args.success || function(){};
 		args.error = args.error || function(){};
+		args.success = args.success || function(){};
+		args.fail = args.fail || function(){};
 		args.context = args.context || window;
 
 		var composedSuccess = function(){
-			args.success.call(args.context, args.files);
+			args.success.call(args.context, cachedFiles);
 		}
 		var lazySuccess = util.trigger(args.files.length, composedSuccess);
+
+		var internalUpdate = function(){
+			args.update.call(args.context);
+			if( errorCount ){
+				if( errorCount + count == args.files.length ){
+					args.fail.call(args.context);
+				}
+			}
+			
+		}
 
 		for (var i = args.files.length - 1; i >= 0; i--) {
 			
 			var closure = function(file){
 				app.permanentFileSystem.root.getFile( file, {},
-					function(){
+					function(file){
 						count ++;
 						progress = count / args.files.length;
 						
-						args.update.apply(args.context);
+						cachedFiles.push(file);
+
+						internalUpdate();
 						lazySuccess();
 					},
 					function(evt){
@@ -34,16 +49,20 @@ define(['util'], function( util ){
 						fileTransfer.download(
 							app.server + file,
 							app.permanentFileSystem.root.fullPath + '/' + file,
-							function(entry) {
+							function(file) {
 								count ++;
 								progress = count / args.files.length;
 								
-								args.update.call(args.context);
+								cachedFiles.push(file);
+
+								internalUpdate();
 								lazySuccess();
 							},
 							function(error) {
-								args.update.call(args.context);
+								errorCount ++;
+								
 								args.error.call( args.context, error );
+								internalUpdate();								
 							}
 						);
 					}
