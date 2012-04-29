@@ -1,4 +1,4 @@
-define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templating ){
+define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecommon, util, cachedownload, templating ){
 	
 	// Top level vars, to stored as soons as they become available
 	var page,
@@ -15,6 +15,22 @@ define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templa
 		page = _page;
 		resolve = _resolve;
 
+		cachedownload.get({
+			files : ['gmb1.png','gmb2.png','gmb3.png','gmb4.png','covers/test.png'],
+			update : function(){
+				console.log("update");
+				console.log(cachedownload.getProgress());
+			},
+			success : function(files){
+				console.log("success");
+				console.log(files);
+			},
+			error: function(error){
+				console.log('error');
+				console.log(error)
+			}
+		});
+
 		// Init the common modules
 		pagecommon.init( page, afterCommon );
 	}
@@ -23,103 +39,17 @@ define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templa
 	* Will be called after all the commom modules have worked on the page.
 	**/
 	function afterCommon(){
-		// -------------------- Step 1
-		/**
-		* Try to get a hold on the issues data
-		**/
-		var loadIssuesData = function(){
-			$.ajax({
-				url : app.permanentFileSystem.root.fullPath +'/' + app.issuesStructureLocalPath,
-				dataType: 'json',
-				success : onIssuesLoadSucess,
-				error : onIssuesLoadFail
-			});
-		}		
+		
+		// Load the config
+		$.ajax({
+			url : app.server + 'config.json',
+			type : 'json',
+			success : function(data){
 
-		// --------- 1 - A
-		// If issues data can be loaded successfully from local storage
-		var onIssuesLoadSucess = function(data){
-			issuesData = data;
-
-			// Create a "lazy" callback to the next step
-			var lazyListIssues = util.trigger(issuesData.length, listIssues);
-
-			// Check if the issues directories exists, if so check if issue
-			// was already downloaded. If not, create the issue directory
-			for( issueID in issuesData.issues){				
-				var closure = function(id){
-					app.permanentFileSystem.root.getDirectory(
-						id, 
-						{create: true, exclusive: true}, 
-						function(dir){
-							// directory don't exist, we can flag early
-							issuesData.issues[id].downloaded = false;
-							lazyListIssues();
-						},
-						function(error){
-							// Flags as downloaded
-							app.permanentFileSystem.root.getFile(
-								id + "/_downloaded",
-								{},
-								function(file){
-									// Issue was donwloaded
-									issuesData.issues[id].downloaded = true;
-									lazyListIssues();
-								},
-								function(evt){
-									// Issue was not downloaded
-									issuesData.issues[id].downloaded = false;
-									lazyListIssues();
-								}
-							);
-						}
-					);
-				}
-				closure(issueID);
-			}	
-		}
-
-		// --------- 1 - B
-		// If issues data was not found on local storage
-		var onIssuesLoadFail = function(){
-			// Is there internet connection?
-			var networkState = navigator.network.connection.type;
-			if( networkState != Connection.NONE || networkState != Connection.UNKNOWN ){
-				// Ok there is internet, let's load the file	
-				$.mobile.showPageLoadingMsg(); // show the loader			
-				var fileTransfer = new FileTransfer();
-				fileTransfer.download(
-					// URL
-					app.server + app.issuesStructureRemotePath,
-					// Download path
-					app.permanentFileSystem.root.fullPath + '/' + app.issuesStructureLocalPath,
-					// On success
-					function(entry) {
-						$.mobile.hidePageLoadingMsg(); // hide the loader
-						// Now that we have the file, let's load it
-						loadIssuesData();
-					},
-					// On error
-					function(error) {
-						$.mobile.hidePageLoadingMsg(); // hide the loader
-						navigator.notification.alert(app.strings.connectionError);
-						console.log("download error source " + error.source);
-						console.log("download error target " + error.target);
-						console.log("upload error code" + error.code);
-
-						// We don't have the file, but let's move to the next step anyway
-						listIssues();
-					}
-				);
+			},
+			error : function(error){
 			}
-			else{
-				// No internet, show an alert and the move on to list issues
-				navigator.notification.alert(app.strings.noInternet);
-				listIssues();
-			}
-		}
-
-		loadIssuesData();
+		});
 	}
 
 
@@ -130,7 +60,7 @@ define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templa
 	**/
 	function listIssues(){
 		
-		if(issuesData){
+		/*if(issuesData){
 			templating.loadTemplate('issues-list', null, function( template ){
 				var data = { issues : [], strings : app.strings };
 				for( issueID in issuesData.issues){	
@@ -149,7 +79,7 @@ define( ['pagecommon', 'util', 'templating'], function( pagecommon, util, templa
 				$('#issues').append( template( data ) );
 				resolve.call();
 			});
-		}
+		}*/
 		
 		
 	}
