@@ -1,0 +1,32 @@
+{
+	"issues": [
+		{
+			"id"  : "gmb1",
+			"title" : "Issue #1",
+			"cover" : "/issues/gmb1/cover.png",
+			"resources" : [],
+			"available" : true
+		},
+		{
+			"id"  : "gmb2",
+			"title" : "Issue #2",
+			"cover" : "/issues/gmb2/cover.png",
+			"resources" : [],
+			"available" : false
+		},
+		{
+			"id"  : "gmb3",
+			"title" : "Issue #3",
+			"cover" : "/issues/gmb3/cover.png",
+			"resources" : [],
+			"available" : false
+		},
+		{
+			"id"  : "gmb4",
+			"title" : "Issue #4",
+			"cover" : "/issues/gmb4/cover.png",
+			"resources" : [],
+			"available" : false
+		}
+	]
+}

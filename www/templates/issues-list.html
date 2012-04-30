@@ -1,17 +1,11 @@
 <article class="ui-grid-a">
 	{{#issues}}
-		<div class="ui-block-{{alternator}}">
+		<div class="ui-block-{{alternator}}" {{#if downloaded}}data-downladed="true"{{/if}}>
 			<h3>{{title}}</h3>
-			<img src="{{cover}}"/>
-			{{#if available}}
-				{{#if downloaded}}
-					<a href="#">{{strings.readIssue}}</a>
-				{{else}}
-					<a href="#">{{strings.downloadIssue}}</a>
-				{{/if}}
-			{{else}}
-				<span>{{strings.issueNotAvailable}}</span>
-			{{/if}}
+			<img src="{{../app.permanentFileSystem.root.fullPath}}{{cover}}"/>
+			{{#unless available}}
+				<span>{{../../app.strings.issueNotAvailable}}</span>
+			{{/unless}}
 		</div>
 	{{/issues}}   
 </article>

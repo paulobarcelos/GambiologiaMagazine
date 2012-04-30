@@ -15,16 +15,23 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 		page = _page;
 		resolve = _resolve;
 
+		// "Remember" this page
+		window.localStorage.setItem( "lastPage", app.page );
+
 		// Init the common modules
-		pagecommon.init( page, getIssuesData );
+		pagecommon.init( page, function(){
+			getSettings( listIssues );
+		} );
 	}
 
 	/**
-	* Will be called after all the commom modules have worked on the page.
+	* Returns the most recent issues data and download any necessary
+	* resources needed.
 	**/
-	function getIssuesData( success, context ){
-		success = success || function(){};
+	function getSettings( ready, context ){
+		ready = ready || function(){};
 		context = context || window;
+
 		// Is there internet connection?
 		var networkState = navigator.network.connection.type;
 		if( networkState != Connection.NONE || networkState != Connection.UNKNOWN ){
@@ -34,65 +41,67 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 				url : app.server + 'config.json',
 				dataType: 'json',
 				success : function(data){
-					cachedownload.get({
-						files : data.resources,		
-						success : function(files){
-							$.mobile.hidePageLoadingMsg();
-							for (var i = files.length - 1; i >= 0; i--) {
-								if(files[i].name === data.settings){
-									var reader = new FileReader();
-								    reader.onloadend = function( evt )
-										success.call( context, $.parseJSON( evt.target.result ) );
-								    };
-								    reader.readAsText( files[i] );
-									break;
-								}
-							};
-						},
-						fail: function(){
-							$.mobile.hidePageLoadingMsg();
-							success.call( context );
-						}
-					});
+					// Ok, now that we have the config, let's compare agains the one
+					// in localStorage. If the server ver is different, download the
+					// resources.
+					var version = window.localStorage.getItem("version");
+					version = version || "0";
 
-					/*
+					if( data.version !== version ){
+						// Ok, let's get the new resources
+						cachedownload.get({
+							files : data.resources,		
+							success : function(files){
+								$.mobile.hidePageLoadingMsg();
+								// Great, all the resources loaded fine, so all we have
+								// to do now is to loop through the list of resources and
+								// find the one that matches the setting file. 
 
-					// Check if we already have the current settings
-					app.permanentFileSystem.root.getFile( data.settings, {},
-						function( file ){
-							// We have this settings already! so let's read it it...
-							
-						},
-						function(evt){
-							// We don't have these settings, we need to donwload the resources!
-							$.mobile.showPageLoadingMsg();
-							cachedownload.get({
-								files : data.resources,		
-								success : function(files){
-									$.mobile.hidePageLoadingMsg();
-									console.log(files);
-								},
-								fail: function(){
-									$.mobile.hidePageLoadingMsg();
-									success.call( context );
-								}
-							});
-						}
-					);
-					*/
+								for (var i = files.length - 1; i >= 0; i--) {
+									if(files[i].name === data.settings){
+										var reader = new FileReader();
+									  	reader.onloadend = function( evt ){
+									  		window.localStorage.setItem( "settings", evt.target.result );
+											var settings = $.parseJSON( window.localStorage.getItem("settings") );
+											ready.call( context, settings );
+									    };
+									    reader.readAsText( files[i] );
+										break;
+									}
+								};
+							},
+							fail: function(){
+								$.mobile.hidePageLoadingMsg();
+								// Something went wrong when we tried to get the resources...
+								// we can't do much now, so let's just try to load it from
+								// local storage and move on with whatever we have.
+								var settings = $.parseJSON( window.localStorage.getItem("settings") );
+								ready.call( context, settings );
+							}
+						});
+					}
+					else{
+						// The server version is the same, so let's just load the
+						// stored settings;
+						var settings = $.parseJSON( window.localStorage.getItem("settings") );
+						ready.call( context, settings );
+					}
+					
 				},
 				error : function(error){
 					$.mobile.hidePageLoadingMsg();
 					// We couldn't get the config file from the server.
-					// Move on but don't notify the user...
-					success.call( context )
+					// Try to get the settigns from local storage (if any),
+					// move on but don't notify the user...
+					var settings = $.parseJSON( window.localStorage.getItem("settings") );
+					ready.call( context, settings );
 				}
 			});
 		}
 		else {
-			// No internet, show an alert and the move on to list issues
-			navigator.notification.alert(app.strings.noInternet);
-			success.call( context );
+			// Ok, no internet, so try to load the issues data from local storage
+			var settings = $.parseJSON( window.localStorage.getItem("settings") );
+			ready.call( context, settings );
 		}
 		
 	}
@@ -101,31 +110,31 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 
 	/**
 	* Show all the issues, or display the a message 
-	* in case we couldn't access the issues data
+	* in case we couldn't access the data
 	**/
-	function listIssues(){
-		
-		/*if(issuesData){
+	function listIssues( data ){
+		if(data){
 			templating.loadTemplate('issues-list', null, function( template ){
-				var data = { issues : [], strings : app.strings };
-				for( issueID in issuesData.issues){	
-					var issue = issuesData.issues[issueID];
-					issue.id = issueID;
-					data.issues.push(issue);
+				// we add alias to the app iteself, as the data might need to access globals, strings, etc
+				data.app = app;
+				for (var i = 0; i < data.issues.length; i++) {
+					// flag if issue was already downloaded
+					data.issues[i].downloaded = window.localStorage.getItem( data.issues[i].id + "_downloaded " );
+					// grid alternator
+					data.issues[i].alternator = (i%2) ? "b" : "a";
 				}
 
-				$('#issues').append( template( data ) );
+				$('#issues').html( template( data ) );
 				resolve.call();
 			});
 		}
 		else{
 			templating.loadTemplate('issues-empty', null, function( template ){
-				var data = { strings : app.strings };
+				data = { app : app };
 				$('#issues').append( template( data ) );
 				resolve.call();
 			});
-		}*/
-		
+		}
 		
 	}
 

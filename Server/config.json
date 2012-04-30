@@ -1,26 +1,27 @@
 {
-	"settings" : "gambiologia.1.0.json",
+	"version" : "0.14",
+	"settings" : "gambiologia.json",
 	"resources" : [
-		"gambiologia.1.0.json",
+		"gambiologia.json",
 
-		"issues/gm1/cover.png",
-		"issues/gm1/nls/info.js",
-		"issues/gm1/nls/root/info.js",
-		"issues/gm1/nls/pt-br/info.js",
+		"issues/gmb1/cover.png",
+		"issues/gmb1/nls/info.js",
+		"issues/gmb1/nls/root/info.js",
+		"issues/gmb1/nls/pt-br/info.js",
 
-		"issues/gm2/cover.png",
-		"issues/gm2/nls/info.js",
-		"issues/gm2/nls/root/info.js",
-		"issues/gm2/nls/pt-br/info.js",
+		"issues/gmb2/cover.png",
+		"issues/gmb2/nls/info.js",
+		"issues/gmb2/nls/root/info.js",
+		"issues/gmb2/nls/pt-br/info.js",
 
-		"issues/gm3/cover.png",
-		"issues/gm3/nls/info.js",
-		"issues/gm3/nls/root/info.js",
-		"issues/gm3/nls/pt-br/info.js",
+		"issues/gmb3/cover.png",
+		"issues/gmb3/nls/info.js",
+		"issues/gmb3/nls/root/info.js",
+		"issues/gmb3/nls/pt-br/info.js",
 
-		"issues/gm4/cover.png",
-		"issues/gm4/nls/info.js",
-		"issues/gm4/nls/root/info.js",
-		"issues/gm4/nls/pt-br/info.js"
+		"issues/gmb4/cover.png",
+		"issues/gmb4/nls/info.js",
+		"issues/gmb4/nls/root/info.js",
+		"issues/gmb4/nls/pt-br/info.js"
 	]
 }

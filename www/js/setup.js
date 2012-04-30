@@ -7,10 +7,9 @@ var app = {
 	
 	// A few constants
 	server : "http://gambiologia.dev/",
-	issuesStructureRemotePath : "issues.json",
-	issuesStructureLocalPath : "issues.json",
 
 	// To following "constants" will be popuplates as soon as we can get a hold on them
+	db : {},
 	permanentFileSystem: {},
 	permanentEntry: {},
 	strings : {}
@@ -22,6 +21,7 @@ require.config({
 	paths : {
 		'util' : app.path + 'js/modules/util',
 		'dom' : app.path + 'js/modules/dom',
+		'db' : app.path + 'js/modules/db',
 		'templating' : app.path + 'js/modules/templating',
 		'cachedownload' : app.path + 'js/modules/cachedownload',
 		'jqmhacks' : app.path + 'js/modules/jqmhacks',
@@ -75,6 +75,20 @@ $(window).load(function () {
 // This will be called when cordova is ready
 var onDeviceReady = function(){
 
+	// ----------------- Step 0
+	// Start the app database
+	/*require( ['db'], function( db ){
+		db.init(function(){
+			app.db = db;
+			console.log(app.db);
+			
+			// Move to step 2
+			//
+		});
+	});*/
+
+
+
 	// ----------------- Step 1 
 
 	// This will be called when the filesystem is ready
@@ -94,8 +108,7 @@ var onDeviceReady = function(){
     		+ evt.target.error.code);
     }
 
-    // Resquest the filesystem that evetually will kick in our chain initizalion
-	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, onFileSystemFail);
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, onFileSystemFail);
 
     // ----------------- Step 2 
 
@@ -115,6 +128,9 @@ var onDeviceReady = function(){
     // This will be called when all initialization is complete
     // and we are ready to load our first page
     var onInitComplete = function(){
-    	$.mobile.changePage(app.path + 'pages/start/index.html');
+		// Check if there if any page required the app to "remember" itself
+		var lastPage = window.localStorage.getItem("lastPage");
+		lastPage = lastPage || 'start';
+    	$.mobile.changePage(app.path + 'pages/' + lastPage + '/index.html');
     }
 }
