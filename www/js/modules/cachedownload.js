@@ -22,7 +22,7 @@ define(['util'], function( util ){
 		var lazySuccess = util.trigger(args.files.length, composedSuccess);
 
 		var internalUpdate = function(){
-			args.update.call(args.context);
+			args.update.call(args.context, progress);
 			if( errorCount ){
 				if( errorCount + count == args.files.length ){
 					args.fail.call(args.context);

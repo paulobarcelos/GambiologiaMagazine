@@ -3,5 +3,8 @@ define({
 	"noInternet" : "Hmmm... precisamos de falar com nossa nave mãe, mas parece que você não está conectado à internet...",
 	"issuesDataNotAvailable" : "A lista das edições não está disponível",
 	"issuesDataRetry" : "Tentar novamente",
-	"issueNotAvailable" : "Edição não disponível"
+	"issueNotAvailable" : "Edição não disponível",
+	"issueView" : "Ler",
+	"issueDownload" : "Baixar"
+
 });

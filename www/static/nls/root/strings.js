@@ -3,5 +3,7 @@ define({
 	"noInternet" : "It seems you are not connected to the internet... that's kind of a problem as we need to talk to our severs to get information about the issues.",
 	"issuesDataNotAvailable" : "We couldn't download the list of issues from our servers",
 	"issuesDataRetry" : "Try again",
-	"issueNotAvailable" : "Issue not available yet"
+	"issueNotAvailable" : "Issue not available yet",
+	"issueView" : "View",
+	"issueDownload" : "Download"
 });

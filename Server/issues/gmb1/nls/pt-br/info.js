@@ -1,4 +1,6 @@
 define({
 	"id" : "gmb1",
-	"name" : "Revista #1"
+	"title" : "Revista #1",
+	"cover" : "cover.png",
+	"stucture" : "structure"
 });

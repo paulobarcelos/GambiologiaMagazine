@@ -4,6 +4,8 @@ var app = {
 	page : '',
 	// app.path will always give us the root of our app
 	path : window.location.href.replace(/pages\/.*?$/, '').replace('index.html',''),
+	// A runtime flag to caue the app to update it's settings
+	upadated : false,
 	
 	// A few constants
 	server : "http://gambiologia.dev/",
