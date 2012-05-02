@@ -137,9 +137,6 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 							// flag if issue was already downloaded
 							templateData.issues[index].downloaded = window.localStorage.getItem( info.id + "_downloaded" );
 
-							// if donload is in progress
-							templateData.issues[index].downloadInProgress = window.localStorage.getItem( info.id + "_downloadInProgress" );
-
 							// grid alternator
 							templateData.issues[index].alternator = ( index % 2 ) ? "b" : "a";
 							
@@ -164,13 +161,55 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 	* Eg.: Provide download & view functionality
 	**/
 	function enhanceIssues(){
-		// Provide the download functionality
-		page.find('#issues li::not(downloaded) button').on('click', function(){
-			donwloadIssue({
-				id : $(this).attr('data-id')
-			});
-		});
+		// Provide the download functionality for issues issues that have
+		// the download button
+		var onClickForDownload = function(ev){
+			var self = $(this);
+			self.off('click');
 
+			var id = self.attr('data-id');
+
+			var progressBar = $('<div class="issue-progress-bar"><div/></div>');
+			self.append(progressBar);
+
+			$.mobile.showPageLoadingMsg("a", "Downloading issue");
+			donwloadIssue({
+				id : id,
+				update : function( progress ){
+					progressBar.html( Math.round(progress * 100) + "%" );
+				},
+				fail : function(error){
+					$.mobile.hidePageLoadingMsg();
+					navigator.notification.alert(app.strings.issueDownloadError  + error);
+					self.on( 'click', onClickForDownload );
+					progressBar.remove();
+				},
+				error: function(error) {
+					console.log(error)
+				},
+				success : function(){
+					$.mobile.hidePageLoadingMsg();
+					// The magazine is downloaded!
+					progressBar.remove();
+					self.addClass('downloaded')
+					self.on( 'click', onClickForView );
+					window.localStorage.setItem( id + "_downloaded", true );
+
+				}
+			});
+		}
+
+		// Provide view functionality for issues that have been downloaded
+		var onClickForView = function(){
+			console.log("view")
+			$.mobile.changePage(app.path + 'pages/sample/index.html', {
+				transition : "flow"
+			});
+		}
+
+
+		page.find( '.issue::not(downloaded)::not(not-available)' ).on( 'click', onClickForDownload );
+		page.find( '.issue.downloaded' ).on( 'click', onClickForView );
 	}
 
 	/**

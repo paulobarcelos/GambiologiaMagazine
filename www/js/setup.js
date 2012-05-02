@@ -39,7 +39,8 @@ require.config({
 $(document.body).live('pageinit', function (event, data){
 	$('.ui-footer').removeClass('slideup'); 
 	$('.ui-header').removeClass('slidedown');		
-	$('.ui-page-footer-fullscreen.ui-page-header-fullscreen .ui-content').css('padding-bottom',$('.ui-page-footer-fullscreen .ui-footer').height() + 11);
+	$('.ui-page-footer-fullscreen.ui-page-header-fullscreen .ui-content')
+		.css('padding-bottom',$('.ui-page-footer-fullscreen .ui-footer').height() + 11);
 });
 
 $(document.body).live('pagebeforeload', function (event, eventData){
@@ -77,17 +78,6 @@ $(window).load(function () {
 // This will be called when cordova is ready
 var onDeviceReady = function(){
 
-	// ----------------- Step 0
-	// Start the app database
-	/*require( ['db'], function( db ){
-		db.init(function(){
-			app.db = db;
-			console.log(app.db);
-			
-			// Move to step 2
-			//
-		});
-	});*/
 
 
 

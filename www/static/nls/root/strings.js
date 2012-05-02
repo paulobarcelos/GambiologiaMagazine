@@ -4,6 +4,7 @@ define({
 	"issuesDataNotAvailable" : "We couldn't download the list of issues from our servers",
 	"issuesDataRetry" : "Try again",
 	"issueNotAvailable" : "Issue not available yet",
+	"issueDownloadError" : "There was an error donwloding this issue, please try again later",
 	"issueView" : "View",
 	"issueDownload" : "Download"
 });

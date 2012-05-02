@@ -1,21 +1,11 @@
 <list class="ui-grid-a">
 	{{#issues}}
-		<li class="ui-block-{{alternator}} {{#if downloaded}}downloaded{{/if}} {{#unless available}}not-available{{/unless}}">
+		<li data-id="{{id}}" class="issue ui-block-{{alternator}} {{#unless available}}not-available{{/unless}} {{#if downloaded}}downloaded{{/if}}">
 			<h3>{{title}}</h3>
 			<img src="{{../app.permanentFileSystem.root.fullPath}}/issues/{{id}}/{{cover}}"/>
-			{{#if available}}
-				{{#if downloaded}}
-					<button>{{../../../app.strings.issueView}}</button>
-				{{else}}
-					{{#if downloadInProgress}}
-						<span class="issue-progress.bar"><span/></span>
-					{{else}}
-						<button data-id="{{id}}" >{{../../../../app.strings.issueDownload}}</button>
-					{{/if}}
-				{{/if}}
-			{{else}}
+			{{#unless available}}
 				<span>{{../../app.strings.issueNotAvailable}}</span>
-			{{/if}}
+			{{/unless}}
 		</li>
 	{{/issues}}   
 </list>

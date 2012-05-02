@@ -171,15 +171,23 @@ define('util', function( util ){
 	}
 
 	/**
-	 * Loads a stylesheet and provides a callback when ready
+	 * Loads a stylesheet and provides a callback when ready or fail
 	 */
-	function loadStyleSheet( path, id, fn, scope ) {
+	function loadStyleSheet( path, id, success, fail, context ) {
+		success = success || function(){};
+		fail = fail || function(){};
+		context = context || window;
+
+		if(!path){
+			fail.call(context, "You need to specify a path");
+		}
+
 		var head = document.getElementsByTagName( 'head' )[0], // reference to document.head for appending/ removing link nodes
 			link = document.createElement( 'link' );			  // create the link node
 			link.setAttribute( 'href', path );
 			link.setAttribute( 'rel', 'stylesheet' );
 			link.setAttribute( 'type', 'text/css' );
-			link.setAttribute( 'id', id);
+			if(id) link.setAttribute( 'id', id);
 	
 		var sheet, cssRules;
 		// get the correct properties to check for depending on the browser
@@ -195,7 +203,7 @@ define('util', function( util ){
 				 if ( link[sheet] && link[sheet][cssRules].length ) { // SUCCESS! our style sheet has loaded
 					clearInterval( interval_id );							// clear the counters
 					clearTimeout( timeout_id );
-					fn.call( scope || window, true, link );			  // fire the callback with success == true
+					success.call( context, link );			  // fire the callback with success == true
 				 }
 			  } catch( e ) {} finally {}
 			}, 10 ),																	// how often to check if the stylesheet is loaded
@@ -203,7 +211,7 @@ define('util', function( util ){
 			  clearInterval( interval_id );				// clear the counters
 			  clearTimeout( timeout_id );
 			  head.removeChild( link );					 // since the style sheet didn't load, remove the link node from the DOM
-			  fn.call( scope || window, false, link ); // fire the callback with success == false
+			  fail.call( context, link ); // fire the callback with success == false
 			}, 15000 );											// how long to wait before failing
 	
 		head.appendChild( link );  // insert the link node into the DOM and start loading the style sheet

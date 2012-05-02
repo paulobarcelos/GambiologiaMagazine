@@ -4,6 +4,7 @@ define({
 	"issuesDataNotAvailable" : "A lista das edições não está disponível",
 	"issuesDataRetry" : "Tentar novamente",
 	"issueNotAvailable" : "Edição não disponível",
+	"issueDownloadError" : "Desculpe, mas aconteceu algum problema ao baixar a revista... Tente de novo daqui a pouco.",
 	"issueView" : "Ler",
 	"issueDownload" : "Baixar"
 
