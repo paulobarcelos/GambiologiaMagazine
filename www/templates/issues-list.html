@@ -1,6 +1,6 @@
 <list class="ui-grid-a">
 	{{#issues}}
-		<li data-id="{{id}}" class="issue ui-block-{{alternator}} {{#unless available}}not-available{{/unless}} {{#if downloaded}}downloaded{{/if}}">
+		<li data-id="{{id}}" class="issue ui-block-{{alternator}} {{#if available}}available{{else}}not-available{{/if}} {{#if downloaded}}downloaded{{else}}not-downloaded{{/if}}">
 			<h3>{{title}}</h3>
 			<img src="{{../app.permanentFileSystem.root.fullPath}}/issues/{{id}}/{{cover}}"/>
 			{{#unless available}}

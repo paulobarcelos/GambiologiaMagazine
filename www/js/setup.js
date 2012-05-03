@@ -9,6 +9,7 @@ var app = {
 	
 	// A few constants
 	server : "http://gambiologia.dev/",
+	//server : "http://blog.paulobarcelos.com/test/gambiologia/",
 
 	// To following "constants" will be popuplates as soon as we can get a hold on them
 	db : {},
@@ -47,16 +48,19 @@ $(document.body).live('pagebeforeload', function (event, eventData){
 	// Avoid jQuery mobile to load the page
 	event.preventDefault();
 	
+	app.eventData = eventData;
 	// Load it manually
 	$.get(eventData.absUrl, function(response){
 		var pageCollection = $(response);
 		app.page = pageCollection.attr('data-page');
 	
-		require([app.path + 'pages/' + app.page + '/' + app.page + '.js'], function(page){
+		require(['util', app.path + 'pages/' + app.page + '/' + app.page + '.js'], function(util, page){
 				$(document.body).append(pageCollection);
-				page.init(pageCollection, function(){
-					eventData.deferred.resolve( eventData.absUrl, eventData.options, pageCollection );
-				});
+				
+				var urlParams = util.getUrlParameters(eventData.absUrl);
+				var resolveFnc = function(){ eventData.deferred.resolve( eventData.absUrl, eventData.options, pageCollection ); }
+
+				page.init( pageCollection, urlParams, resolveFnc);
 			}
 		);
 	}, 'html');
@@ -77,10 +81,6 @@ $(window).load(function () {
 
 // This will be called when cordova is ready
 var onDeviceReady = function(){
-
-
-
-
 	// ----------------- Step 1 
 
 	// This will be called when the filesystem is ready
@@ -121,8 +121,8 @@ var onDeviceReady = function(){
     // and we are ready to load our first page
     var onInitComplete = function(){
 		// Check if there if any page required the app to "remember" itself
-		var lastPage = window.localStorage.getItem("lastPage");
-		lastPage = lastPage || 'start';
-    	$.mobile.changePage(app.path + 'pages/' + lastPage + '/index.html');
+    	var url = window.localStorage.getItem("lastURL");
+		url = url || app.path + 'pages/sample/index.html';
+    	$.mobile.changePage(url);
     }
 }

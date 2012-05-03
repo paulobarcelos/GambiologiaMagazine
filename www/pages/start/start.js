@@ -1,7 +1,7 @@
 define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecommon, util, cachedownload, templating ){
 	
 	// Top level vars, to stored as soons as they become available
-	var page, resolve;
+	var page, urlParams, resolve;
 
 	// Get local settings
 	var settings = $.parseJSON( window.localStorage.getItem( "settings" ) );
@@ -12,13 +12,14 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 	* page obejct and to a resolve function that should be called as
 	* soon as the page is ready to be displayed
 	**/
-	function init( _page, _resolve ){
+	function init( _page, _urlParams, _resolve ){
 		// Sotre as top level vars
 		page = _page;
+		urlParams = _urlParams;
 		resolve = _resolve;
 
 		// "Remember" this page
-		window.localStorage.setItem( "lastPage", app.page );
+		window.localStorage.setItem( "lastURL", app.path + 'pages/' + app.page + '/index.html' );
 
 		// Init the common modules
 		pagecommon.init( page, function(){
@@ -163,52 +164,54 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 	function enhanceIssues(){
 		// Provide the download functionality for issues issues that have
 		// the download button
-		var onClickForDownload = function(ev){
-			var self = $(this);
-			self.off('click');
+		var onClickForDownload = function(){
+			var networkState = navigator.network.connection.type;
+			if( networkState != Connection.NONE || networkState != Connection.UNKNOWN ){
+				var self = $(this);
+				self.off('click');
 
-			var id = self.attr('data-id');
+				var id = self.attr('data-id');
 
-			var progressBar = $('<div class="issue-progress-bar"><div/></div>');
-			self.append(progressBar);
+				var progressBar = $('<div class="issue-progress-bar"><div/></div>');
+				self.append(progressBar);
 
-			$.mobile.showPageLoadingMsg("a", "Downloading issue");
-			donwloadIssue({
-				id : id,
-				update : function( progress ){
-					progressBar.html( Math.round(progress * 100) + "%" );
-				},
-				fail : function(error){
-					$.mobile.hidePageLoadingMsg();
-					navigator.notification.alert(app.strings.issueDownloadError  + error);
-					self.on( 'click', onClickForDownload );
-					progressBar.remove();
-				},
-				error: function(error) {
-					console.log(error)
-				},
-				success : function(){
-					$.mobile.hidePageLoadingMsg();
-					// The magazine is downloaded!
-					progressBar.remove();
-					self.addClass('downloaded')
-					self.on( 'click', onClickForView );
-					window.localStorage.setItem( id + "_downloaded", true );
-
-				}
-			});
+				self.addClass('downloading');
+				donwloadIssue({
+					id : id,
+					update : function( progress ){
+						progressBar.html( Math.round(progress * 100) + "%" );
+					},
+					fail : function(error){
+						navigator.notification.alert(app.strings.issueDownloadError);
+						self.on( 'click', onClickForDownload );
+						self.removeClass('downloading');
+						progressBar.remove();
+					},
+					error: function(error) {
+						console.log(error)
+					},
+					success : function(){
+						// The magazine is downloaded!
+						progressBar.remove();
+						self.addClass('downloaded')
+						self.removeClass('downloading');
+						window.localStorage.setItem( id + "_downloaded", true );
+						viewIssue(id);
+					}
+				});
+			}
+			else{
+				navigator.notification.alert(app.strings.noInternet);
+			}
 		}
 
 		// Provide view functionality for issues that have been downloaded
 		var onClickForView = function(){
-			console.log("view")
-			$.mobile.changePage(app.path + 'pages/sample/index.html', {
-				transition : "flow"
-			});
+			viewIssue($(this).attr('data-id'));	
 		}
 
 
-		page.find( '.issue::not(downloaded)::not(not-available)' ).on( 'click', onClickForDownload );
+		page.find( '.issue.available.not-downloaded' ).on( 'click', onClickForDownload );
 		page.find( '.issue.downloaded' ).on( 'click', onClickForView );
 	}
 
@@ -255,6 +258,30 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 		}
 
 		cachedownload.get(cachedownloadOptions);
+	}
+
+	/**
+	* Open the issue viewer for the desired issue
+	**/
+	function viewIssue( id ){
+
+		id = id || "-1";
+
+		// get the list of files
+		var found = false;
+		for (var i = 0; i < settings.issues.length; i++) {
+			if( id == settings.issues[i].id ){
+				found = true;
+				break;
+			}
+		};
+
+		if(!found) return;
+		
+		$.mobile.changePage(app.path + 'pages/sample/index.html', {
+			transition : "flow",
+			data : { id : id }
+		});
 	}
 
 	return {

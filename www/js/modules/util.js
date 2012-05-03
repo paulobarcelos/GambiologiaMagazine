@@ -161,6 +161,25 @@ define(function(){
 			case 12: return new C(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11]); break;
 		}
 	}
+	/**
+	* Parses query variables from an url string
+	* @param String url - url string
+	* @return Object with key/value pairs 
+	**/
+	function getUrlParameters(url) {
+		if (url == "") return {};
+	    var search = url.split('?');
+	    if(search.length != 2) return{};
+	    search = search[1];
+	    search = search.split('&');
+	    var b = {};
+	    for (var i = 0; i < search.length; ++i)  {
+	        var p = search[i].split('=');
+	        if (p.length != 2) continue;
+	        b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+	    }
+	    return b;
+	}
 
 	return {
 		concat: concat,
@@ -171,6 +190,7 @@ define(function(){
 		once: once,
 		trigger: trigger,
 		async: async,
-		construct : construct
+		construct : construct,
+		getUrlParameters : getUrlParameters
 	}
 });

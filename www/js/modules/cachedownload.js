@@ -33,9 +33,12 @@ define(['util'], function( util ){
 
 		for (var i = args.files.length - 1; i >= 0; i--) {
 			
-			var closure = function(file){
-				app.permanentFileSystem.root.getFile( file, {},
+			var closure = function(filename){
+				console.log("cachedownload: getting '" + filename + "'");
+
+				app.permanentFileSystem.root.getFile( filename, {},
 					function(file){
+						console.log("cachedownload: '" + filename + "' was already cached");
 						count ++;
 						progress = count / args.files.length;
 						
@@ -45,11 +48,13 @@ define(['util'], function( util ){
 						lazySuccess();
 					},
 					function(evt){
+						console.log("cachedownload: '" + filename + "' is not cached, downloading...");
 						var fileTransfer = new FileTransfer();
 						fileTransfer.download(
-							app.server + file,
-							app.permanentFileSystem.root.fullPath + '/' + file,
+							app.server + filename,
+							app.permanentFileSystem.root.fullPath + '/' + filename,
 							function(file) {
+								console.log("cachedownload: success downloading '" + filename + "'");
 								count ++;
 								progress = count / args.files.length;
 								
@@ -59,6 +64,7 @@ define(['util'], function( util ){
 								lazySuccess();
 							},
 							function(error) {
+								console.log("cachedownload: error downloading '" + filename + "'");
 								errorCount ++;
 								
 								args.error.call( args.context, error );
