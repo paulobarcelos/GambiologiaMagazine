@@ -12,7 +12,6 @@ var app = {
 	//server : "http://blog.paulobarcelos.com/test/gambiologia/",
 
 	// To following "constants" will be popuplates as soon as we can get a hold on them
-	db : {},
 	permanentFileSystem: {},
 	permanentEntry: {},
 	strings : {}
@@ -24,10 +23,8 @@ require.config({
 	paths : {
 		'util' : app.path + 'js/modules/util',
 		'dom' : app.path + 'js/modules/dom',
-		'db' : app.path + 'js/modules/db',
 		'templating' : app.path + 'js/modules/templating',
 		'cachedownload' : app.path + 'js/modules/cachedownload',
-		'jqmhacks' : app.path + 'js/modules/jqmhacks',
 		'pagenav' : app.path + 'js/modules/pagenav',
 		'pagecommon' : app.path + 'js/modules/pagecommon',
 
@@ -42,6 +39,9 @@ $(document.body).live('pageinit', function (event, data){
 	$('.ui-header').removeClass('slidedown');		
 	$('.ui-page-footer-fullscreen.ui-page-header-fullscreen .ui-content')
 		.css('padding-bottom',$('.ui-page-footer-fullscreen .ui-footer').height() + 11);
+
+	// Give a chance to the page to exucute it's own post enhancement logic
+	if(app.pageObject) app.pageObject.onReady();
 });
 
 $(document.body).live('pagebeforeload', function (event, eventData){
@@ -51,6 +51,7 @@ $(document.body).live('pagebeforeload', function (event, eventData){
 	app.eventData = eventData;
 	// Load it manually
 	$.get(eventData.absUrl, function(response){
+
 		var pageCollection = $(response);
 		app.page = pageCollection.attr('data-page');
 	
@@ -61,6 +62,9 @@ $(document.body).live('pagebeforeload', function (event, eventData){
 				var resolveFnc = function(){ eventData.deferred.resolve( eventData.absUrl, eventData.options, pageCollection ); }
 
 				page.init( pageCollection, urlParams, resolveFnc);
+
+				// for convenive
+				app.pageObject = page;
 			}
 		);
 	}, 'html');
@@ -122,7 +126,7 @@ var onDeviceReady = function(){
     var onInitComplete = function(){
 		// Check if there if any page required the app to "remember" itself
     	var url = window.localStorage.getItem("lastURL");
-		url = url || app.path + 'pages/sample/index.html';
+		url = url || app.path + 'pages/start/index.html';
     	$.mobile.changePage(url);
     }
 }

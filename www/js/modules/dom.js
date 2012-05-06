@@ -1,4 +1,4 @@
-define('util', function( util ){
+define(function(){
 	
 	function Element(tag, properties) {
 		var props = properties || {},
@@ -181,6 +181,7 @@ define('util', function( util ){
 		if(!path){
 			fail.call(context, "You need to specify a path");
 		}
+
 
 		var head = document.getElementsByTagName( 'head' )[0], // reference to document.head for appending/ removing link nodes
 			link = document.createElement( 'link' );			  // create the link node

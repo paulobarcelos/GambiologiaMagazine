@@ -1,4 +1,4 @@
-define( ['templating', 'pagenav', 'jqmhacks'], function( templating, pagenav, jqmhacks ){
+define( ['templating', 'pagenav'], function( templating, pagenav ){
 	function init( page, ready, scope ){
 
 		// Enhance the page navigation

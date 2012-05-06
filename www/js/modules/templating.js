@@ -42,7 +42,7 @@ define(['util'], function( util ){
 						var data = target.data('data');
 						if (data){
 							var result = $(template(data));
-							target.html( result );
+							target.after( result );
 							target.remove();
 
 							if( eachSuccess ){

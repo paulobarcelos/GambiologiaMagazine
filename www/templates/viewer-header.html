@@ -1,0 +1,28 @@
+<div data-role="header" data-position="fixed" data-fullscreen="true">
+	<select id="chapter-index"
+	data-mini="true"
+	data-icon="grid"
+	data-iconpos="notext"
+	data-inline="true"
+	class="ui-btn-left">
+		{{#chapters}}
+			<option value="{{id}}" {{#if active}}selected{{/if}}>{{title}}</option>
+		{{/chapters}}   
+	</select>
+
+	<h1>{{title}}</h1>
+
+	<a 
+	id="back-to-start"
+	href="{{appPath}}pages/start/index.html"
+	data-icon="home"
+	data-iconpos="notext"
+	class="ui-btn-right"
+	data-transition="flow"
+	data-direction="reverse">Back</a>
+
+
+	
+	
+
+</div>

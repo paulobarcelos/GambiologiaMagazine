@@ -3,57 +3,55 @@
 	"issues" : [
 		{
 			"id" : "gmb1",
-			"info" : "info",
+			"info" : "info.js",
 			"resources" : [
 				"issues/gmb1/nls/structure.js",
 				"issues/gmb1/nls/root/structure.js",
 				"issues/gmb1/nls/pt-br/structure.js",
-				"issues/gmb1/resources/1.html",
-				"issues/gmb1/resources/1.css",
-				"issues/gmb1/resources/1.js",
-				"issues/gmb1/resources/2.html",
-				"issues/gmb1/resources/2.css",
-				"issues/gmb1/resources/img.jpg"
+				"issues/gmb1/resources/style.css",
+				"issues/gmb1/resources/script.js",
+				"issues/gmb1/resources/1.html",				
+				"issues/gmb1/resources/2.html"
 			],
 			"available" : true
 		},
 		{
 			"id" : "gmb2",
-			"info" : "info",
+			"info" : "info.js",
 			"resources" : [],
 			"available" : false
 		},
 		{
 			"id" : "gmb3",
-			"info" : "info",
+			"info" : "info.js",
 			"resources" : [],
 			"available" : false
 
 		},
 		{
 			"id" : "gmb4",
-			"info" : "info",
+			"info" : "info.js",
 			"resources" : [],
 			"available" : false
 		}
 	],
 	"resources" : [
-		"issues/gmb1/cover.png",		
+		"issues/gmb1/resources/cover.png",		
 		"issues/gmb1/nls/info.js",
 		"issues/gmb1/nls/root/info.js",
 		"issues/gmb1/nls/pt-br/info.js",
 
-		"issues/gmb2/cover.png",
+		"issues/gmb2/resources/cover.png",
 		"issues/gmb2/nls/info.js",
 		"issues/gmb2/nls/root/info.js",
 		"issues/gmb2/nls/pt-br/info.js",
 
-		"issues/gmb3/cover.png",
+		"issues/gmb3/resources/cover.png",
 		"issues/gmb3/nls/info.js",
 		"issues/gmb3/nls/root/info.js",
 		"issues/gmb3/nls/pt-br/info.js",
 
-		"issues/gmb4/cover.png",
+		"issues/gmb4/resources/cover.png",
 		"issues/gmb4/nls/info.js",
 		"issues/gmb4/nls/root/info.js",
 		"issues/gmb4/nls/pt-br/info.js"

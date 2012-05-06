@@ -1,0 +1,22 @@
+<div data-role="footer" class="issue-footer" data-position="fixed" data-fullscreen="true">
+	{{#if previous}}
+		<a 
+		href="{{appPath}}pages/viewer/index.html?id={{issueId}}&chapter={{previous.id}}" 
+		data-icon="arrow-l" 
+		data-iconpos="notext" 
+		data-mini="true" 
+		data-transition="slide" 
+		data-direction="reverse"
+		class="ui-btn-left">Previous</a>
+	{{/if}}
+	<h1 data-mini="true">{{current.title}}</h1>
+	{{#if next}}
+		<a 
+		href="{{appPath}}pages/viewer/index.html?id={{issueId}}&chapter={{next.id}}" 
+		data-icon="arrow-r" 
+		data-iconpos="notext" 
+		data-mini="true" 
+		data-transition="slide" 
+		class="ui-btn-right">Next</a>
+	{{/if}}
+</div>

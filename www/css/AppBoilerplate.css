@@ -81,3 +81,15 @@ bottom content in fullscreen mode
 .ui-content a[data-role=button]:last-child{
 	margin-bottom: 0px;
 }
+
+/**
+* Viewer
+**/
+
+/**
+* Issue footer
+**/
+#viewer .ui-footer.viewer-footer .ui-title{
+	font-size: 14px;
+	margin: 0.6em 40px 0.8em;
+}

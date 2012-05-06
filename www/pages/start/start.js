@@ -13,7 +13,7 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 	* soon as the page is ready to be displayed
 	**/
 	function init( _page, _urlParams, _resolve ){
-		// Sotre as top level vars
+		// Store as top level vars
 		page = _page;
 		urlParams = _urlParams;
 		resolve = _resolve;
@@ -25,6 +25,14 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 		pagecommon.init( page, function(){
 			updateSettings( listIssues );
 		} );
+	}
+
+	/**
+	* Called when JQM 'pageinit' event is fired. At this point
+	* all ehancement is done and page is ready.
+	**/
+	function onReady(){
+
 	}
 
 	/**
@@ -64,7 +72,7 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 							success : function(files){
 								$.mobile.hidePageLoadingMsg();
 								// All the resources loaded fine, we are safe to store the new settings
-								window.localStorage.getItem( "settings", severSettingsText );
+								window.localStorage.setItem( "settings", severSettingsText );
 								settings = serverSettings;
 								ready.call( context, settings );
 							},
@@ -107,7 +115,7 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 
 		if(settings.issues.length){
 
-			templating.loadTemplate('issues-list', null, function( template ){
+			templating.loadTemplate('issue-list', null, function( template ){
 				templateData.issues = [];
 
 
@@ -127,7 +135,7 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 					var closure = function(){
 						var index = i;
 						// Get the localized info
-						require(['i18n!' + app.permanentFileSystem.root.fullPath + '/issues/' + settings.issues[index].id + '/nls/' + settings.issues[index].info + '.js' ], function(info){
+						require(['i18n!' + app.permanentFileSystem.root.fullPath + '/issues/' + settings.issues[index].id + '/nls/' + settings.issues[index].info ], function(info){
 
 							// store the info
 							templateData.issues[index] = info;	
@@ -149,7 +157,7 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 			});
 		}
 		else{
-			templating.loadTemplate('issues-empty', null, function( template ){
+			templating.loadTemplate('issue-list-empty', null, function( template ){
 				page.find('#issues').html( template( templateData ) );
 				resolve.call();
 			});
@@ -278,14 +286,15 @@ define( ['pagecommon', 'util', 'cachedownload', 'templating'], function( pagecom
 
 		if(!found) return;
 		
-		$.mobile.changePage(app.path + 'pages/sample/index.html', {
+		$.mobile.changePage(app.path + 'pages/viewer/index.html', {
 			transition : "flow",
 			data : { id : id }
 		});
 	}
 
 	return {
-		init: init
+		init: init,
+		onReady : onReady
 	}	
 	
 });

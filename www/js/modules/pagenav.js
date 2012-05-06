@@ -13,7 +13,7 @@ define(function(){
 						target.attr('href',  app.path + 'pages/' + page + '/index.html');
 					}
 					else{
-						target.addClass('active, ui-btn-active');
+						target.addClass('active ui-btn-active');
 					}				
 				}					
 			}
